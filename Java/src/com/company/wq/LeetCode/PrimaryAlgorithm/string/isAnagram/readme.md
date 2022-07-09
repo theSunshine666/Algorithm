@@ -7,4 +7,4 @@
  ##### **示例 2:**
  ##### 输入: s = "rat", t = "car"
  ##### 输出: false
- ##### [link](https://blog.csdn.net/qq_38271143/article/details/125368335?spm=1001.2014.3001.5501)
+ ##### [博客地址](https://blog.csdn.net/qq_38271143/article/details/125368335?spm=1001.2014.3001.5501)
