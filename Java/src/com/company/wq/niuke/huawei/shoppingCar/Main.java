@@ -1,6 +1,7 @@
 package com.company.wq.niuke.huawei.shoppingCar;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * 描述
@@ -21,28 +22,28 @@ import java.util.Arrays;
  */
 public class Main {
     public static void main(String[] args) {
-        int[][] list = { {20,3,5},{20,3,5},{10,3,0},{10,2,0},{10,1,0} };
-        int N = 50;
-        System.out.println(maxValueShop(list,N));
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()){
+            int N3 = scanner.nextInt();
+            int n = scanner.nextInt();
+            int[][] list3 = new int[n][3];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < 3; j++) {
+                    list3[i][j] = scanner.nextInt();
+                }
+            }
+            System.out.println(maxValueShop(list3, N3));
+        }
+        scanner.close();
     }
 
-    /**
-     * 分四种情况，只买主件，买主件+附件1，主件+附件2，主件+附件1+附件2
-     * 类goods中，用a1表示附件1，a2表示附件2
-     * 遍历遇到附件直接跳过，将附件放到主件中去考虑
-     * @param list
-     * @param N
-     * @return
-     */
-    public static int maxValueShop(int[][] list,int N){
-        //先初始化
+    public static int maxValueShop(int[][] list, int N) {
         int len = list.length;
-        N /= 10;
-        int[] v = new int[len+1]; //价格
-        int[] p = new int[len+1];  //重要度
-        int[] q = new int[len+1];    //是否为附件
-
-        Goods[] goods = new Goods[len+1];
+        int[] v = new int[len + 1];
+        int[] p = new int[len + 1];
+        int[] q = new int[len + 1];
+        Goods[] goods = new Goods[len + 1];
+        //初始化v，p，q，goods
         goods[0] = new Goods(0,0,0);
         for (int i = 1; i < len + 1; i++) {
             v[i] = list[i - 1][0];
@@ -50,114 +51,89 @@ public class Main {
             q[i] = list[i - 1][2];
             goods[i] = new Goods(v[i], p[i], q[i]);
         }
+        //对附件进行处理，如果该物品是附件，那么将该附件对应到主件上去
         for (int i = 1; i < len + 1; i++) {
-            //list[i]为附件,q[i]为主件编号，因此将主件编号为q[i]的附件设置为当前物品编号
-            if (q[i] > 0){
-                if (goods[q[i]].a1 == 0){
-                    goods[q[i]].setA1(i);
-                }else {
-                    goods[q[i]].setA2(i);
+            if (goods[i].q > 0) {
+                if (goods[goods[i].q].a1 == 0) {
+                    goods[goods[i].q].setA1(i);
+                }else if (goods[goods[i].q].a2 == 0) {
+                    goods[goods[i].q].setA2(i);
                 }
             }
         }
+        //到这里都是没有问题的
+        int cardinality = getCardinality(v); //基数
+        //dp[i][j]代表的是：手中有j元时，买第i件物品时达到的最大满意度是dp[i][j]
+        int[][] dp = new int[len + 1][N /cardinality+ 1];
+        for (int i = 1; i < len + 1; i++) {
+            int price = 0, price1 = 0, price2 = 0, price3 = 0;
+            int satisfy = 0, satisfy1 = 0, satisfy2 = 0, satisfy3 = 0;
+            //只考虑主件
+            price = goods[i].v;
+            satisfy = goods[i].v * goods[i].p;
 
-        //dp[i][j]表示，手中money=j时，买第i件物品能够获得的最大满意度
-        int[][] dp = new int[len+1][N+1];
-        for (int i = 1; i < len+1; i++) {
-            int v1 = 0,v2 = 0,v3 = 0;
-            int temp1 = 0,temp2 = 0,temp3 = 0;
-
-            //当前物品的满意度为
-            int currItem = goods[i].v * goods[i].p;
-            //只买附件1+主件，因为附件a1初始化为0，一旦不为0则说明上面已经将a1赋值为附件编号了
-            if (goods[i].a1 != 0){
-                v1 = goods[i].v + goods[goods[i].a1].v;
-                temp1 = goods[goods[i].a1].p * goods[goods[i].a1].v + currItem;
+            //买主件+附件一
+            if (goods[i].a1 > 0) {
+                price1 = goods[goods[i].a1].v + price;
+                satisfy1 = goods[goods[i].a1].v * goods[goods[i].a1].p + satisfy;
             }
-            //只买附件2+主件
-            if (goods[i].a2 != 0){
-                v2 = goods[i].v + goods[goods[i].a2].v;
-                temp2 = goods[goods[i].a2].p * goods[goods[i].a2].v + currItem;
+            //买主件+附件二
+            if (goods[i].a2 > 0 ) {
+                price2 = goods[goods[i].a2].v + price;
+                satisfy2 = goods[goods[i].a2].v * goods[goods[i].a2].p + satisfy;
             }
-            //买主件+附件1+附件2
-            if (goods[i].a1 != 0 && goods[i].a2 != 0){
-                v3 = goods[i].v + goods[goods[i].a1].v + goods[goods[i].a2].v;
-                temp3 = goods[goods[i].a1].p * goods[goods[i].a1].v +
-                        goods[goods[i].a2].p * goods[goods[i].a2].v + currItem;
+            //买主件+附件一+附件二
+            if (goods[i].a1 > 0 && goods[i].a2 > 0) {
+                price3 = goods[goods[i].a1].v + goods[goods[i].a2].v + price;
+                satisfy3 = goods[goods[i].a1].v * goods[goods[i].a1].p + goods[goods[i].a2].v * goods[goods[i].a2].p + satisfy;
             }
-            for (int j = 1; j <= N; j++) {
-                if (goods[i].q > 0){
-                    dp[i][j] = dp[i-1][j];
-                }else {
-                    dp[i][j] = dp[i-1][j];
-                    //只买主件，没有附件
-                    if (j*10 >= goods[i].v && goods[i].v != 0){
-                        dp[i][j] = Math.max(dp[i-1][j],dp[i-1][(j*10-goods[i].v)/10]+currItem);
+            //对dp进行赋值（填充表格）
+            for (int j = 1; j <= N/cardinality; j++) {
+                if (goods[i].q > 0) { //跳过附件
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    //只买主件，对应上面price和satisfy
+                    if (j * cardinality >= price && price != 0) {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(j * cardinality - price) / cardinality] + satisfy);
                     }
-                    //买主件+附件1
-                    if (j*10 >= v1 && v1 != 0){
-                        dp[i][j] = Math.max(dp[i][j] = dp[i-1][j],dp[i-1][(j*10-goods[i].v-goods[goods[i].a1].v)/10]+temp1);
+                    //买主件+附件一，对应上面price1和satisfy1
+                    if (j * cardinality >= price1 && price1 != 0) {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(j * cardinality - price1) / cardinality] + satisfy1);
                     }
-                    //买主件+附件2
-                    if (j*10 >= v2 && v2 != 0){
-                        dp[i][j] = Math.max(dp[i][j] = dp[i-1][j],dp[i-1][(j*10-goods[i].v-goods[goods[i].a2].v)/10]+temp2);
+                    //买主件+附件二，对应上面price2和satisfy2
+                    if (j * cardinality >= price2 && price2 != 0) {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(j * cardinality - price2) / cardinality] + satisfy2);
                     }
-                    //买主件+附件1+附件2
-                    if (j*10 >= v3 && v3 != 0){
-                        dp[i][j] = Math.max(dp[i][j] = dp[i-1][j],dp[i-1][(j*10-goods[i].v-goods[goods[i].a2].v-goods[goods[i].a1].v)/10]+temp3);
+                    //买主件+附件一+附件二，对应上面price3和satisfy3
+                    if (j * cardinality >= price3 && price3 != 0) {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(j * cardinality - price3) / cardinality] + satisfy3);
                     }
                 }
             }
         }
-        return dp[len][N];
+        return dp[len][N/cardinality];
     }
 
-//    public static int maxValueShop(int[][] list,int N){
-//        int len = list.length;
-//        //将附件转换为主件
-//        //将每个物品的价格与重要度相乘作为价值v
-//        int[] v = new int[list.length+1];
-//        int[] w = new int[list.length+1];//物品的价格
-//        //物品额外产生的价值ex_v
-//        int[] ex_v = new int[list.length+1];
-//        int[] ex_w = new int[list.length+1]; //额外花的钱
-//        //初始化v和w
-//        for (int i = 1; i < list.length+1; i++) {
-//            v[i] = list[i-1][0] * list[i-1][1];
-//            w[i] = list[i-1][0];
-//        }
-//        //计算购买某个物品时，额外花的钱和额外产生的价值
-//        for (int i = 1; i < list.length; i++) {
-//            if (list[i-1][2] > 0){
-//                ex_v[i] = v[list[i-1][2]];
-//                ex_w[i] = w[list[i-1][2]];
-//                v[i] += ex_v[i];
-//                w[i] += ex_w[i];
-//            }
-//        }
-//        //接下来就是0-1背包问题，求最大价值
-//        //dp[i][j]表示当前手中有钱j时（背包容量为j时），前i件物品所能获得的最大价值
-//        int[][] dp = new int[len+1][N/10+1];
-//        for (int i = 1; i < len + 1; i++) {
-//            for (int j = 1; j < N/10 + 1; j++) {
-//                if (j < w[i]){
-//                    dp[i][j] = dp[i-1][j];
-//                }else {
-//                    dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-w[i]]+v[i]);
-//                }
-//            }
-//        }
-//        return dp[len][N/10];
-//    }
+
+    public static int getCardinality(int[] arr){
+        int[] arrCopy = arr;
+        Arrays.sort(arrCopy);
+        int temp = arrCopy[1];
+        int count = 1;
+        while (temp / 10 != 0){
+            temp /= 10;
+            count *= 10;
+        }
+        return count;
+    }
 }
 
-class Goods{
-    public int v;//价格
-    public int p;//重要度
-    public int q;//主附件
+class Goods {
+    int v; //价格
+    int p; //重要度
+    int q; //是否为附件
 
-    public int a1 = 0; //附件1
-    public int a2 = 0; //附件2
+    int a1 = 0, a2 = 0;
 
     public Goods(int v, int p, int q) {
         this.v = v;
@@ -184,3 +160,40 @@ class Goods{
         this.a2 = a2;
     }
 }
+
+/**
+ 未通过的示例一：
+ 50 5
+ 20 3 5  这个
+ 20 3 5  这个
+ 10 3 0
+ 10 2 0
+ 10 1 0  这个
+ 预期输出：130
+ 未通过的示例二：
+ 1000 5
+ 800 2 0   这个
+ 400 5 1
+ 200 5 1   这个
+ 400 3 0
+ 500 2 0
+ 预期输出：2600
+ 未通过的示例三：
+ 2000 10
+ 500 1 0  这个
+ 400 4 0
+ 300 5 1  这个
+ 400 5 1  这个
+ 200 5 0  这个
+ 500 4 5
+ 400 4 0
+ 320 2 0
+ 410 3 0  这个
+ 400 3 5  这个
+ 预期输出：7430  这个应该是题目测试用例答案错了，实际输出应该是7400
+ 10 5 4
+ 10 5 4
+ 10 5 0
+ 10 1 0
+ 输出：110
+ */
