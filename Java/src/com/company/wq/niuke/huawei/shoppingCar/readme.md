@@ -1,3 +1,6 @@
+ 题目解答：
+ [【牛客刷题HJ16】购物单](https://blog.csdn.net/qq_38271143/article/details/125714854?spm=1001.2014.3001.5502)
+ [【牛客刷题】HJ16购物单-动态规划算法](https://www.bilibili.com/video/BV1jY4y177zd/?vd_source=7dcf87705508bce13d8f13b1b05c8252)
  * 描述
  * 王强决定把年终奖用于购物，他把想买的物品分为两类：主件与附件，附件是从属于某个主件的，下表就是一些主件与附件的例子：
  * 主件	附件
@@ -10,7 +13,7 @@
  * 王强查到了每件物品的价格（都是 10 元的整数倍），而他只有 N 元的预算。除此之外，他给每件物品规定了一个重要度，用整数 1 ~ 5 表示。他希望在花费不超过 N 元的前提下，使自己的满意度达到最大。
  * 满意度是指所购买的每件物品的价格与重要度的乘积的总和，假设设第ii件物品的价格为v[i]v[i]，重要度为w[i]w[i]，共选中了kk件物品，编号依次为j_1,j_2,...,j_k，则满意度为:
  * v[j1]*w[j1]+v[j2]*w[j2]+...+v[jk]*w[jk]，其中*为乘号
- * 链接：https://www.nowcoder.com/practice/f9c6f980eeec43ef85be20755ddbeaf4?tpId=37&tqId=21239&rp=1&ru=/exam/oj/ta&qru=/exam/oj/ta&sourceUrl=%2Fexam%2Foj%2Fta%3FtpId%3D37&difficulty=undefined&judgeStatus=undefined&tags=&title=
+ * 题目链接：https://www.nowcoder.com/practice/f9c6f980eeec43ef85be20755ddbeaf4?tpId=37&tqId=21239&rp=1&ru=/exam/oj/ta&qru=/exam/oj/ta&sourceUrl=%2Fexam%2Foj%2Fta%3FtpId%3D37&difficulty=undefined&judgeStatus=undefined&tags=&title=
  * 请你帮助王强计算可获得的最大的满意度。
  输入描述：
  输入的第 1 行，为两个正整数N，m，用一个空格隔开：
