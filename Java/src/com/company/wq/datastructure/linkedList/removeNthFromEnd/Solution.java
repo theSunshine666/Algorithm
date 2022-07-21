@@ -69,6 +69,36 @@ public class Solution {
         slow.next = slow.next.next;
         return head;
     }
+    
+    /**
+     * 解法三、借用了表头，优化了解法二中fast往前移动n位时需要判断为空的情况
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd3 (ListNode head, int n) {
+        //添加表头
+        ListNode res = new ListNode(-1);
+        res.next = head;
+        ListNode pre = res;
+        ListNode cur = head;
+        ListNode fast = head;
+        //快指针先往前移动n位
+        while (n!=0){
+            fast = fast.next;
+            n--;
+        }
+        //快指针和当前指针同步移动,当fast移动到最后为null时，则当前指针cur移动到倒数第n个节点
+        while (fast != null){
+            fast = fast.next;
+            pre = cur;
+            cur = cur.next;
+        }
+        //删除该位置的节点
+        pre.next = cur.next;
+        //返回去掉表头
+        return res.next;
+    }
 }
 
 class ListNode {
