@@ -55,6 +55,8 @@ public class Solution {
                 return null;
             }
         }
+        // 快指针移动了n位后指向了空，说明n等于当前链表的长度，需要将表头删除，
+        // 因此返回 head.next
         if (fast == null){
             return head.next;
         }
