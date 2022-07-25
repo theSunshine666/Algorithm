@@ -63,7 +63,16 @@ public class Solution {
         return pHead;
     }
 
+    /**
+     * 方法三：利用栈的后入先出的特点，先将全部节点入栈，再出栈k个
+     * @param pHead
+     * @param k
+     * @return
+     */
     public ListNode FindKthToTail3 (ListNode pHead, int k) {
+        if (pHead == null){
+            return null;
+        }
         Stack<ListNode> stack = new Stack<>();
         ListNode node = pHead;
         //先将所有节点全部入栈
@@ -74,8 +83,15 @@ public class Solution {
         //获取栈顶元素
         ListNode newHead = null;
         //出栈k个，插入到栈顶元素之前
-        for (int i = 0; i < k; i++) {
-            newHead = stack.pop();
+        for (; k != 0 && !stack.isEmpty(); ) {
+            ListNode temp = stack.pop();
+            temp.next = newHead;
+            newHead = temp;
+            k--;
+        }
+        //栈为空，i<k，说明k是大于链表长度的
+        if (stack.isEmpty() && k != 0){
+            return null;
         }
         return newHead;
     }
